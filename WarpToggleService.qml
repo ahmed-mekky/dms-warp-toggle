@@ -10,7 +10,7 @@ import qs.Services
 Singleton {
     id: root
 
-    readonly property string pluginId: "dankWarpToggle"
+    readonly property string pluginId: "warpToggle"
     readonly property string cliBinary: "warp-cli"
 
     property bool isConnected: false

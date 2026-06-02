@@ -19,7 +19,7 @@ PluginComponent {
     readonly property string disconnectReason: WarpToggleService.disconnectReason
 
     Component.onCompleted: {
-        console.log("[dankWarpToggle] Plugin loaded");
+        console.log("[warpToggle] Plugin loaded");
     }
 
     ccWidgetIcon: {

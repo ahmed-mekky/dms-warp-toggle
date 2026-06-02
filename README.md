@@ -1,4 +1,4 @@
-# dankWarpToggle
+# dms-warp-toggle
 
 A minimal DankMaterialShell plugin that toggles Cloudflare WARP via `warp-cli` with real-time status updates.
 
@@ -30,9 +30,9 @@ A minimal DankMaterialShell plugin that toggles Cloudflare WARP via `warp-cli` w
 | File | Description |
 |------|-------------|
 | `plugin.json` | Plugin manifest |
-| `DankWarpToggle.qml` | Main UI component (bar pill + popout) |
-| `DankWarpToggleService.qml` | Singleton service (listener process + toggle logic) |
-| `DankWarpToggleSettings.qml` | Settings panel |
+| `WarpToggle.qml` | Main UI component (bar pill + popout) |
+| `WarpToggleService.qml` | Singleton service (listener process + toggle logic) |
+| `WarpToggleSettings.qml` | Settings panel |
 | `components/WarpToggleButton.qml` | Reusable toggle button |
 | `qmldir` | QML singleton registration |
 
