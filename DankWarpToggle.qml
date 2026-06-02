@@ -86,7 +86,7 @@ PluginComponent {
                                     return Theme.errorContainer;
                                 if (root.isConnecting)
                                     return Theme.warningContainer;
-                                return root.isConnected ? Theme.primaryContainer : Theme.surfaceContainerHigh;
+                                return root.isConnected ? Theme.primaryContainer : Theme.surface;
                             }
                             border.width: 0
 
@@ -253,7 +253,7 @@ PluginComponent {
                                             return Theme.errorContainer;
                                         if (root.isConnecting)
                                             return Theme.warningContainer;
-                                        return root.isConnected ? Theme.primaryContainer : Theme.surfaceContainerHigh;
+                                        return root.isConnected ? Theme.primaryContainer : Theme.surface;
                                     }
                                     border.width: 0
 

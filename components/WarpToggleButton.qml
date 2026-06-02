@@ -7,13 +7,9 @@ Rectangle {
     height: 44
     width: parent.width
     radius: Theme.cornerRadius
-    color: {
-        if (!isAvailable || isBusy)
-            return Theme.surfaceContainer;
-        if (isConnecting)
-            return Theme.warningContainer;
-        return Theme.surfaceContainer;
-    }
+    color: mouseArea.containsMouse
+        ? Theme.primaryHoverLight
+        : Theme.surfaceLight
     border.width: {
         if (!isAvailable || isBusy)
             return 0;
@@ -23,10 +19,12 @@ Rectangle {
     }
     border.color: {
         if (!isAvailable || isBusy)
-            return Theme.surfaceContainer;
+            return "transparent";
         if (isConnecting)
             return Theme.warning;
-        return isConnected ? Theme.primary : Theme.outline;
+        return mouseArea.containsMouse
+            ? Theme.primary
+            : (isConnected ? Theme.primary : Theme.outlineLight);
     }
 
     property bool isConnected: false
@@ -85,6 +83,7 @@ Rectangle {
     }
 
     MouseArea {
+        id: mouseArea
         anchors.fill: parent
         hoverEnabled: true
         cursorShape: root.isAvailable && !root.isBusy ? Qt.PointingHandCursor : Qt.ForbiddenCursor
