@@ -1,0 +1,19 @@
+{
+    "id": "dankWarpToggle",
+    "name": "WARP Toggle",
+    "description": "Toggle Cloudflare WARP via warp-cli with real-time status updates",
+    "version": "1.0.0",
+    "license": "MIT",
+    "author": "Avenge Media",
+    "icon": "vpn_key",
+    "type": "widget",
+    "capabilities": ["warp-toggle", "dankbar-widget"],
+    "component": "./DankWarpToggle.qml",
+    "settings": "./DankWarpToggleSettings.qml",
+    "requires_dms": ">=1.4.0",
+    "permissions": [
+        "settings_read",
+        "settings_write",
+        "process"
+    ]
+}
