@@ -86,40 +86,27 @@ PluginComponent {
                                     return Theme.errorContainer;
                                 if (root.isConnecting)
                                     return Theme.warningContainer;
-                                return root.isConnected ? Theme.primaryContainer : Theme.surfaceContainer;
+                                return root.isConnected ? Theme.primaryContainer : Theme.surfaceContainerHigh;
                             }
                             border.width: 0
 
-                            Item {
+                            DankIcon {
                                 anchors.centerIn: parent
-                                width: 28
-                                height: 28
-
-                                DankIcon {
-                                    anchors.centerIn: parent
-                                    name: {
-                                        if (!root.isAvailable)
-                                            return "error";
-                                        if (root.isConnecting)
-                                            return "sync";
-                                        return root.isConnected ? "cloud" : "cloud_off";
-                                    }
-                                    size: 28
-                                    color: {
-                                        if (!root.isAvailable)
-                                            return Theme.error;
-                                        if (root.isConnecting)
-                                            return Theme.warning;
-                                        return root.isConnected ? Theme.primary : Theme.surfaceVariantText;
-                                    }
+                                rotation: 0
+                                name: {
+                                    if (!root.isAvailable)
+                                        return "error";
+                                    if (root.isConnecting)
+                                        return "sync";
+                                    return root.isConnected ? "cloud" : "cloud_off";
                                 }
-
-                                RotationAnimation on rotation {
-                                    running: root.isConnecting
-                                    from: 0
-                                    to: 360
-                                    duration: 1000
-                                    loops: Animation.Infinite
+                                size: 28
+                                color: {
+                                    if (!root.isAvailable)
+                                        return Theme.error;
+                                    if (root.isConnecting)
+                                        return Theme.warning;
+                                    return root.isConnected ? Theme.primary : Theme.surfaceVariantText;
                                 }
                             }
                         }
@@ -194,6 +181,8 @@ PluginComponent {
     // ─── Horizontal Bar Pill ───
     horizontalBarPill: Component {
         DankIcon {
+            anchors.verticalCenter: parent.verticalCenter
+            rotation: 0
             name: {
                 if (!root.isAvailable)
                     return "error";
@@ -264,40 +253,27 @@ PluginComponent {
                                             return Theme.errorContainer;
                                         if (root.isConnecting)
                                             return Theme.warningContainer;
-                                        return root.isConnected ? Theme.primaryContainer : Theme.surfaceContainer;
+                                        return root.isConnected ? Theme.primaryContainer : Theme.surfaceContainerHigh;
                                     }
                                     border.width: 0
 
-                                    Item {
+                                    DankIcon {
                                         anchors.centerIn: parent
-                                        width: 32
-                                        height: 32
-
-                                        DankIcon {
-                                            anchors.centerIn: parent
-                                            name: {
-                                                if (!root.isAvailable)
-                                                    return "error";
-                                                if (root.isConnecting)
-                                                    return "sync";
-                                                return root.isConnected ? "cloud" : "cloud_off";
-                                            }
-                                            size: 32
-                                            color: {
-                                                if (!root.isAvailable)
-                                                    return Theme.error;
-                                                if (root.isConnecting)
-                                                    return Theme.warning;
-                                                return root.isConnected ? Theme.primary : Theme.surfaceVariantText;
-                                            }
+                                        rotation: 0
+                                        name: {
+                                            if (!root.isAvailable)
+                                                return "error";
+                                            if (root.isConnecting)
+                                                return "sync";
+                                            return root.isConnected ? "cloud" : "cloud_off";
                                         }
-
-                                        RotationAnimation on rotation {
-                                            running: root.isConnecting
-                                            from: 0
-                                            to: 360
-                                            duration: 1000
-                                            loops: Animation.Infinite
+                                        size: 32
+                                        color: {
+                                            if (!root.isAvailable)
+                                                return Theme.error;
+                                            if (root.isConnecting)
+                                                return Theme.warning;
+                                            return root.isConnected ? Theme.primary : Theme.surfaceVariantText;
                                         }
                                     }
                                 }
