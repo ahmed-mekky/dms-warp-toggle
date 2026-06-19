@@ -8,7 +8,6 @@ import "./components"
 
 PluginComponent {
     id: root
-    width: 100
 
     readonly property bool isConnected: WarpToggleService.isConnected
     readonly property bool isConnecting: WarpToggleService.isConnecting
