@@ -1,6 +1,7 @@
 # dms-warp-toggle
 
 A minimal DankMaterialShell plugin that toggles Cloudflare WARP via `warp-cli` with real-time status updates.
+![App Screenshot](./assets/screenshot.png)
 
 ## Features
 
