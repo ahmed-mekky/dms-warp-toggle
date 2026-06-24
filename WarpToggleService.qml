@@ -128,7 +128,7 @@ Singleton {
             return;
 
         isBusy = true;
-        const command = isConnected ? "disconnect" : "connect";
+        const command = (isConnected || isConnecting) ? "disconnect" : "connect";
 
         Proc.runCommand(`${pluginId}.${command}`, [cliBinary, command], (stdout, exitCode) => {
             isBusy = false;
