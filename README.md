@@ -1,14 +1,14 @@
 # dms-warp-toggle
 
 A minimal DankMaterialShell plugin that toggles Cloudflare WARP via `warp-cli` with real-time status updates.
-![App Screenshot](./assets/screenshot.png)
+![Preview](./assets/preview.gif)
 
 ## Features
 
 - **Real-time status** — Uses `warp-cli -l status` live stream for instant state updates
 - **Minimal & polished** — Card-based UI with badge-style bar pill, spinner animation, and a clean popout panel following DMS Material 3 design
 - **No DBus, no native bindings** — Interacts with WARP exclusively via subprocess calls
-- **Settings** — Toggle the listener, adjust restart interval, manual refresh
+- **Settings** — Toggle the listener, manual refresh
 
 ## Requirements
 
