@@ -91,7 +91,8 @@ PluginComponent {
 
                             DankIcon {
                                 anchors.centerIn: parent
-                                rotation: 0
+                                property real spinAngle: 0
+                                rotation: root.isConnecting ? spinAngle : 0
                                 name: {
                                     if (!root.isAvailable)
                                         return "error";
@@ -106,6 +107,13 @@ PluginComponent {
                                     if (root.isConnecting)
                                         return Theme.warning;
                                     return root.isConnected ? Theme.primary : Theme.surfaceVariantText;
+                                }
+                                NumberAnimation on spinAngle {
+                                    from: 0
+                                    to: 360
+                                    duration: 1000
+                                    loops: Animation.Infinite
+                                    running: root.isConnecting
                                 }
                             }
                         }
@@ -181,7 +189,8 @@ PluginComponent {
     horizontalBarPill: Component {
         DankIcon {
             anchors.verticalCenter: parent.verticalCenter
-            rotation: 0
+            property real spinAngle: 0
+            rotation: root.isConnecting ? spinAngle : 0
             name: {
                 if (!root.isAvailable)
                     return "error";
@@ -196,6 +205,13 @@ PluginComponent {
                 if (root.isConnecting)
                     return Theme.warning;
                 return root.isConnected ? Theme.primary : Theme.surfaceVariantText;
+            }
+            NumberAnimation on spinAngle {
+                from: 0
+                to: 360
+                duration: 1000
+                loops: Animation.Infinite
+                running: root.isConnecting
             }
         }
     }
@@ -258,7 +274,8 @@ PluginComponent {
 
                                     DankIcon {
                                         anchors.centerIn: parent
-                                        rotation: 0
+                                        property real spinAngle: 0
+                                        rotation: root.isConnecting ? spinAngle : 0
                                         name: {
                                             if (!root.isAvailable)
                                                 return "error";
@@ -273,6 +290,13 @@ PluginComponent {
                                             if (root.isConnecting)
                                                 return Theme.warning;
                                             return root.isConnected ? Theme.primary : Theme.surfaceVariantText;
+                                        }
+                                        NumberAnimation on spinAngle {
+                                            from: 0
+                                            to: 360
+                                            duration: 1000
+                                            loops: Animation.Infinite
+                                            running: root.isConnecting
                                         }
                                     }
                                 }
