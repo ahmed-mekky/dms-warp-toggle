@@ -28,7 +28,6 @@ StyledRect {
     property var modeOptions: []
 
     signal toggleRequested
-    signal refreshRequested
     signal modeRequested(string mode)
 
     readonly property var modeLabels: {
@@ -39,36 +38,50 @@ StyledRect {
     }
 
     readonly property color statusColor: {
+        if (isBusy || isConnecting)
+            return Theme.warning;
         if (!isAvailable)
             return Theme.error;
-        if (isConnecting)
-            return Theme.warning;
         if (isConnected)
-            return Theme.success;
+            return Theme.primary;
         return Theme.surfaceVariantText;
     }
 
     readonly property color statusContainerColor: {
+        if (isBusy || isConnecting)
+            return Theme.withAlpha(Theme.warning, 0.15);
         if (!isAvailable)
             return Theme.withAlpha(Theme.error, 0.15);
-        if (isConnecting)
-            return Theme.withAlpha(Theme.warning, 0.15);
         if (isConnected)
-            return Theme.withAlpha(Theme.success, 0.15);
+            return Theme.withAlpha(Theme.primary, 0.15);
         return Theme.surfaceContainerHighest;
     }
 
+    readonly property color statusDotColor: {
+        if (isBusy || isConnecting)
+            return Theme.warning;
+        if (!isAvailable)
+            return Theme.error;
+        if (isConnected)
+            return Theme.primary;
+        return Theme.outline;
+    }
+
     readonly property string statusTitle: {
+        if (isBusy || isConnecting)
+            return pendingAction === "disconnect"
+                ? I18n.tr("Disconnecting...", "WARP status header")
+                : I18n.tr("Connecting...", "WARP status header");
         if (!isAvailable)
             return I18n.tr("WARP Unavailable", "WARP status header");
-        if (isConnecting)
-            return I18n.tr("Connecting...", "WARP status header");
         return isConnected
             ? I18n.tr("WARP Connected", "WARP status header")
             : I18n.tr("WARP Disconnected", "WARP status header");
     }
 
     readonly property string statusSubtitle: {
+        if (isBusy)
+            return I18n.tr("Applying change", "WARP status subtitle");
         if (!isAvailable)
             return I18n.tr("warp-cli is not available", "WARP status subtitle");
         if (isConnecting)
@@ -184,12 +197,12 @@ StyledRect {
                     anchors.centerIn: parent
                     property real spinAngle: 0
 
-                    rotation: root.isConnecting ? spinAngle : 0
+                    rotation: (root.isConnecting || root.isBusy) ? spinAngle : 0
                     name: {
+                        if (root.isConnecting || root.isBusy)
+                            return "sync";
                         if (!root.isAvailable)
                             return "error";
-                        if (root.isConnecting)
-                            return "sync";
                         return root.isConnected ? "cloud" : "cloud_off";
                     }
                     size: Theme.iconSize + Theme.spacingXS
@@ -200,7 +213,7 @@ StyledRect {
                         to: 360
                         duration: 1000
                         loops: Animation.Infinite
-                        running: root.isConnecting
+                        running: root.isConnecting || root.isBusy
                     }
                 }
             }
@@ -227,7 +240,7 @@ StyledRect {
                         width: 8
                         height: 8
                         radius: 4
-                        color: root.statusColor
+                        color: root.statusDotColor
                         anchors.verticalCenter: parent.verticalCenter
                     }
 
@@ -241,24 +254,20 @@ StyledRect {
                 }
             }
 
-            DankActionButton {
-                iconName: "refresh"
-                iconColor: Theme.surfaceVariantText
-                buttonSize: Theme.iconSize + Theme.spacingXS
-                tooltipText: I18n.tr("Refresh status", "WARP refresh tooltip")
-                tooltipSide: "bottom"
-                Layout.alignment: Qt.AlignTop
-                onClicked: root.refreshRequested()
+            DankToggle {
+                hideText: true
+                checked: root.isConnected
+                toggling: root.isBusy || root.isConnecting
+                enabled: !root.isBusy
+                Layout.alignment: Qt.AlignVCenter
+                onClicked: root.toggleRequested()
             }
         }
 
-        WarpToggleButton {
+        Rectangle {
             width: parent.width
-            isConnected: root.isConnected
-            isConnecting: root.isConnecting
-            isBusy: root.isBusy
-            pendingAction: root.pendingAction
-            onClicked: root.toggleRequested()
+            height: 1
+            color: Theme.withAlpha(Theme.outline, 0.12)
         }
 
         RowLayout {
@@ -346,6 +355,14 @@ StyledRect {
                 Layout.alignment: Qt.AlignVCenter
                 elide: Text.ElideRight
             }
+        }
+
+        StyledText {
+            visible: root.hasStats
+            text: I18n.tr("Tunnel", "WARP tunnel section")
+            font.pixelSize: Theme.fontSizeSmall
+            font.weight: Font.Medium
+            color: Theme.surfaceVariantText
         }
 
         Grid {

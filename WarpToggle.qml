@@ -15,7 +15,6 @@ PluginComponent {
     readonly property bool isBusy: WarpToggleService.isBusy
     readonly property bool isSwitchingMode: WarpToggleService.isSwitchingMode
     readonly property string pendingAction: WarpToggleService.pendingAction
-    readonly property string statusText: WarpToggleService.statusText
     readonly property string networkHealth: WarpToggleService.networkHealth
     readonly property string disconnectReason: WarpToggleService.disconnectReason
     readonly property string operationMode: WarpToggleService.operationMode
@@ -90,7 +89,6 @@ PluginComponent {
             receivedTraffic: root.receivedTraffic
             modeOptions: WarpToggleService.modeOptions
             onToggleRequested: WarpToggleService.toggle()
-            onRefreshRequested: WarpToggleService.refresh()
             onModeRequested: mode => WarpToggleService.setMode(mode)
         }
     }
@@ -114,7 +112,7 @@ PluginComponent {
                     return Theme.warning;
                 if (!root.isAvailable)
                     return Theme.error;
-                return root.isConnected ? Theme.success : Theme.surfaceVariantText;
+                return root.isConnected ? Theme.primary : Theme.surfaceVariantText;
             }
             NumberAnimation on spinAngle {
                 from: 0
@@ -132,7 +130,6 @@ PluginComponent {
         PopoutComponent {
             id: popout
             headerText: I18n.tr("WARP", "WARP popout header")
-            detailsText: root.statusText
             showCloseButton: true
 
             Column {
@@ -163,7 +160,6 @@ PluginComponent {
                     receivedTraffic: root.receivedTraffic
                     modeOptions: WarpToggleService.modeOptions
                     onToggleRequested: WarpToggleService.toggle()
-                    onRefreshRequested: WarpToggleService.refresh()
                     onModeRequested: mode => WarpToggleService.setMode(mode)
                     Component.onCompleted: WarpToggleService.refresh()
                 }
