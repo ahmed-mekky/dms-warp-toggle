@@ -11,6 +11,7 @@
     "component": "./WarpToggle.qml",
     "settings": "./WarpToggleSettings.qml",
     "requires_dms": ">=1.4.0",
+    "requires": ["warp-cli"],
     "permissions": [
         "settings_read",
         "settings_write",

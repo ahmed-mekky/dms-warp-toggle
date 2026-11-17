@@ -68,7 +68,7 @@ PluginComponent {
                 // ── Header row with refresh in top-right ──
                 Item {
                     width: parent.width
-                    height: 48
+                    height: Theme.iconSize * 2
 
                     Row {
                         id: headerLeft
@@ -77,14 +77,14 @@ PluginComponent {
                         anchors.verticalCenter: parent.verticalCenter
 
                         StyledRect {
-                            width: 48
-                            height: 48
+                            width: Theme.iconSize * 2
+                            height: Theme.iconSize * 2
                             radius: Theme.cornerRadius
                             color: {
                                 if (!root.isAvailable)
                                     return Theme.errorContainer;
                                 if (root.isConnecting)
-                                    return Theme.warningContainer;
+                                    return Theme.withAlpha(Theme.warning, 0.15);
                                 return root.isConnected ? Theme.primaryContainer : Theme.surface;
                             }
                             border.width: 0
@@ -100,7 +100,7 @@ PluginComponent {
                                         return "sync";
                                     return root.isConnected ? "cloud" : "cloud_off";
                                 }
-                                size: 28
+                                size: Theme.iconSize + Theme.spacingXS
                                 color: {
                                     if (!root.isAvailable)
                                         return Theme.error;
@@ -120,7 +120,7 @@ PluginComponent {
 
                         Column {
                             anchors.verticalCenter: parent.verticalCenter
-                            spacing: 2
+                            spacing: Theme.spacingXS
 
                             StyledText {
                                 text: {
@@ -163,7 +163,7 @@ PluginComponent {
                     DankActionButton {
                         iconName: "refresh"
                         iconColor: Theme.surfaceVariantText
-                        buttonSize: 28
+                        buttonSize: Theme.iconSize + Theme.spacingXS
                         tooltipText: I18n.tr("Refresh status", "WARP refresh tooltip")
                         tooltipSide: "bottom"
                         anchors.right: parent.right
@@ -260,14 +260,14 @@ PluginComponent {
                                 anchors.verticalCenter: parent.verticalCenter
 
                                 StyledRect {
-                                    width: 56
-                                    height: 56
+                                    width: Theme.iconSize * 2 + Theme.spacingS
+                                    height: Theme.iconSize * 2 + Theme.spacingS
                                     radius: Theme.cornerRadius
                                     color: {
                                         if (!root.isAvailable)
                                             return Theme.errorContainer;
                                         if (root.isConnecting)
-                                            return Theme.warningContainer;
+                                            return Theme.withAlpha(Theme.warning, 0.15);
                                         return root.isConnected ? Theme.primaryContainer : Theme.surface;
                                     }
                                     border.width: 0
@@ -283,7 +283,7 @@ PluginComponent {
                                                 return "sync";
                                             return root.isConnected ? "cloud" : "cloud_off";
                                         }
-                                        size: 32
+                                        size: Theme.iconSizeLarge
                                         color: {
                                             if (!root.isAvailable)
                                                 return Theme.error;
@@ -303,7 +303,7 @@ PluginComponent {
 
                                 Column {
                                     anchors.verticalCenter: parent.verticalCenter
-                                    spacing: 2
+                                    spacing: Theme.spacingXS
 
                                     StyledText {
                                         text: {
@@ -346,7 +346,7 @@ PluginComponent {
                             DankActionButton {
                                 iconName: "refresh"
                                 iconColor: Theme.surfaceVariantText
-                                buttonSize: 28
+                                buttonSize: Theme.iconSize + Theme.spacingXS
                                 tooltipText: I18n.tr("Refresh status", "WARP refresh tooltip")
                                 tooltipSide: "bottom"
                                 anchors.right: parent.right

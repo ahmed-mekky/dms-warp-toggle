@@ -4,7 +4,7 @@ import qs.Widgets
 
 Rectangle {
     id: root
-    height: 44
+    height: Theme.iconSizeLarge + Theme.spacingM
     width: parent.width
     radius: Theme.cornerRadius
     color: mouseArea.containsMouse
@@ -49,7 +49,7 @@ Rectangle {
                     return "sync";
                 return root.isConnected ? "cloud_off" : "cloud";
             }
-            size: 20
+            size: Theme.iconSizeSmall + Theme.spacingXS
             color: {
                 if (!root.isAvailable || root.isBusy)
                     return Theme.surfaceVariantText;
