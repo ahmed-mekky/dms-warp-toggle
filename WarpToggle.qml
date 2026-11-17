@@ -35,15 +35,17 @@ PluginComponent {
     }
 
     ccWidgetIcon: {
+        if (isConnecting || isBusy)
+            return "sync";
         if (!isAvailable)
             return "error";
-        if (isConnecting)
-            return "sync";
         return isConnected ? "cloud" : "cloud_off";
     }
 
     ccWidgetPrimaryText: "WARP"
     ccWidgetSecondaryText: {
+        if (isBusy)
+            return pendingAction === "disconnect" ? "Disconnecting..." : "Connecting...";
         if (!isAvailable)
             return "Unavailable";
         if (isConnecting)
@@ -98,20 +100,20 @@ PluginComponent {
         DankIcon {
             anchors.verticalCenter: parent.verticalCenter
             property real spinAngle: 0
-            rotation: root.isConnecting ? spinAngle : 0
+            rotation: (root.isConnecting || root.isBusy) ? spinAngle : 0
             name: {
+                if (root.isConnecting || root.isBusy)
+                    return "sync";
                 if (!root.isAvailable)
                     return "error";
-                if (root.isConnecting)
-                    return "sync";
                 return root.isConnected ? "cloud" : "cloud_off";
             }
             size: Theme.barIconSize(root.barThickness)
             color: {
+                if (root.isConnecting || root.isBusy)
+                    return Theme.warning;
                 if (!root.isAvailable)
                     return Theme.error;
-                if (root.isConnecting)
-                    return Theme.warning;
                 return root.isConnected ? Theme.success : Theme.surfaceVariantText;
             }
             NumberAnimation on spinAngle {
@@ -119,7 +121,7 @@ PluginComponent {
                 to: 360
                 duration: 1000
                 loops: Animation.Infinite
-                running: root.isConnecting
+                running: root.isConnecting || root.isBusy
             }
         }
     }
