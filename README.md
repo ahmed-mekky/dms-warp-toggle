@@ -26,6 +26,7 @@ A minimal DankMaterialShell plugin that toggles Cloudflare WARP via `warp-cli` w
 ## Usage
 
 - Click the bar pill or Control Center tile to toggle WARP: connected disconnects, anything else connects
+- Right-click the bar pill to open the popout
 - Expand the widget to see status, mode, account, tunnel stats, and the toggle button
 - Change the mode from the dropdown in the detail card or popout
 - Open plugin settings to configure the listener behavior

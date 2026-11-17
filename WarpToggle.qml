@@ -52,7 +52,7 @@ PluginComponent {
     }
     ccWidgetIsActive: isConnected
     pillClickAction: () => WarpToggleService.toggle()
-    pillRightClickAction: null
+    pillRightClickAction: () => root.triggerPopout()
     ccDetailHeight: 350
 
     onCcWidgetExpanded: {
