@@ -88,7 +88,7 @@ StyledRect {
             return I18n.tr("Establishing tunnel", "WARP status subtitle");
         if (isConnected)
             return networkHealth ? networkHealth : I18n.tr("Network healthy", "WARP status subtitle");
-        return disconnectReason ? disconnectReason : I18n.tr("Not connected", "WARP status subtitle");
+        return disconnectReason ? friendlyDisconnectReason(disconnectReason) : I18n.tr("Not connected", "WARP status subtitle");
     }
 
     readonly property string accountLabel: {
@@ -167,6 +167,21 @@ StyledRect {
                 return modeOptions[i].value;
         }
         return label;
+    }
+
+    function friendlyDisconnectReason(reason) {
+        switch (reason) {
+        case "Settings Changed":
+            return I18n.tr("Settings changed — reconnect to apply", "WARP disconnect reason");
+        case "Admin directed disconnect":
+            return I18n.tr("Disconnected by administrator", "WARP disconnect reason");
+        case "The network is not available":
+            return I18n.tr("Network unavailable", "WARP disconnect reason");
+        case "Paused":
+            return I18n.tr("Paused", "WARP disconnect reason");
+        default:
+            return reason;
+        }
     }
 
     implicitHeight: contentColumn.implicitHeight + Theme.spacingL * 2

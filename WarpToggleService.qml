@@ -282,6 +282,7 @@ Singleton {
     function setMode(mode) {
         if (!isAvailable || isSwitchingMode || mode === operationMode)
             return;
+        const wasConnected = isConnected;
         isSwitchingMode = true;
         Proc.runCommand(`${pluginId}.setMode`, [cliBinary, "mode", mode], (stdout, exitCode) => {
             isSwitchingMode = false;
@@ -294,6 +295,8 @@ Singleton {
                 return;
             }
             operationMode = mode;
+            if (wasConnected)
+                modeReconnectTimer.restart();
             Qt.callLater(() => {
                 root.checkAvailability();
                 root.refreshDetails();
@@ -304,11 +307,16 @@ Singleton {
     function toggle() {
         if (isBusy)
             return;
+        runToggle((isConnected || isConnecting) ? "disconnect" : "connect");
+    }
+
+    function runToggle(command) {
+        if (isBusy)
+            return;
 
         const wasConnected = isConnected;
         const wasConnecting = isConnecting;
         const previousStatus = statusText;
-        const command = (isConnected || isConnecting) ? "disconnect" : "connect";
 
         isBusy = true;
         pendingAction = command;
@@ -375,6 +383,18 @@ Singleton {
                 console.log(`[${root.pluginId}] Restarting listener...`);
                 listenerProcess.running = true;
             }
+        }
+    }
+
+    Timer {
+        id: modeReconnectTimer
+        interval: 1000
+        running: false
+        repeat: false
+        onTriggered: {
+            if (root.isBusy || root.isConnected || root.isConnecting)
+                return;
+            root.runToggle("connect");
         }
     }
 }
