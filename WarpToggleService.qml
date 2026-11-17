@@ -18,6 +18,7 @@ Singleton {
     property bool isAvailable: false
     property bool isBusy: false
     property bool isSwitchingMode: false
+    property bool isApplyingMode: false
     property string pendingAction: ""
     property string statusText: "Unknown"
     property string networkHealth: ""
@@ -284,9 +285,11 @@ Singleton {
             return;
         const wasConnected = isConnected;
         isSwitchingMode = true;
+        isApplyingMode = true;
         Proc.runCommand(`${pluginId}.setMode`, [cliBinary, "mode", mode], (stdout, exitCode) => {
             isSwitchingMode = false;
             if (exitCode !== 0) {
+                isApplyingMode = false;
                 console.warn(`[${pluginId}] mode change failed:`, stdout);
                 ToastService.showError(
                     I18n.tr("WARP mode change failed", "WARP mode error title"),
@@ -295,8 +298,11 @@ Singleton {
                 return;
             }
             operationMode = mode;
-            if (wasConnected)
+            if (wasConnected) {
                 modeReconnectTimer.restart();
+            } else {
+                isApplyingMode = false;
+            }
             Qt.callLater(() => {
                 root.checkAvailability();
                 root.refreshDetails();
@@ -392,6 +398,7 @@ Singleton {
         running: false
         repeat: false
         onTriggered: {
+            root.isApplyingMode = false;
             if (root.isBusy || root.isConnected || root.isConnecting)
                 return;
             root.runToggle("connect");

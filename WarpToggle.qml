@@ -14,6 +14,7 @@ PluginComponent {
     readonly property bool isAvailable: WarpToggleService.isAvailable
     readonly property bool isBusy: WarpToggleService.isBusy
     readonly property bool isSwitchingMode: WarpToggleService.isSwitchingMode
+    readonly property bool isApplyingMode: WarpToggleService.isApplyingMode
     readonly property string pendingAction: WarpToggleService.pendingAction
     readonly property string networkHealth: WarpToggleService.networkHealth
     readonly property string disconnectReason: WarpToggleService.disconnectReason
@@ -34,7 +35,7 @@ PluginComponent {
     }
 
     ccWidgetIcon: {
-        if (isConnecting || isBusy)
+        if (isConnecting || isBusy || isApplyingMode)
             return "sync";
         if (!isAvailable)
             return "error";
@@ -43,6 +44,8 @@ PluginComponent {
 
     ccWidgetPrimaryText: "WARP"
     ccWidgetSecondaryText: {
+        if (isApplyingMode)
+            return "Applying mode...";
         if (isBusy)
             return pendingAction === "disconnect" ? "Disconnecting..." : "Connecting...";
         if (!isAvailable)
@@ -74,6 +77,7 @@ PluginComponent {
             isAvailable: root.isAvailable
             isBusy: root.isBusy
             isSwitchingMode: root.isSwitchingMode
+            isApplyingMode: root.isApplyingMode
             pendingAction: root.pendingAction
             networkHealth: root.networkHealth
             disconnectReason: root.disconnectReason
@@ -98,9 +102,9 @@ PluginComponent {
         DankIcon {
             anchors.verticalCenter: parent.verticalCenter
             property real spinAngle: 0
-            rotation: (root.isConnecting || root.isBusy) ? spinAngle : 0
+            rotation: (root.isConnecting || root.isBusy || root.isApplyingMode) ? spinAngle : 0
             name: {
-                if (root.isConnecting || root.isBusy)
+                if (root.isConnecting || root.isBusy || root.isApplyingMode)
                     return "sync";
                 if (!root.isAvailable)
                     return "error";
@@ -108,7 +112,7 @@ PluginComponent {
             }
             size: Theme.barIconSize(root.barThickness)
             color: {
-                if (root.isConnecting || root.isBusy)
+                if (root.isConnecting || root.isBusy || root.isApplyingMode)
                     return Theme.warning;
                 if (!root.isAvailable)
                     return Theme.error;
@@ -119,7 +123,7 @@ PluginComponent {
                 to: 360
                 duration: 1000
                 loops: Animation.Infinite
-                running: root.isConnecting || root.isBusy
+                running: root.isConnecting || root.isBusy || root.isApplyingMode
             }
         }
     }
@@ -145,6 +149,7 @@ PluginComponent {
                     isAvailable: root.isAvailable
                     isBusy: root.isBusy
                     isSwitchingMode: root.isSwitchingMode
+                    isApplyingMode: root.isApplyingMode
                     pendingAction: root.pendingAction
                     networkHealth: root.networkHealth
                     disconnectReason: root.disconnectReason

@@ -11,6 +11,7 @@ StyledRect {
     property bool isAvailable: false
     property bool isBusy: false
     property bool isSwitchingMode: false
+    property bool isApplyingMode: false
     property string pendingAction: ""
     property bool compact: false
     property string networkHealth: ""
@@ -38,7 +39,7 @@ StyledRect {
     }
 
     readonly property color statusColor: {
-        if (isBusy || isConnecting)
+        if (isApplyingMode || isBusy || isConnecting)
             return Theme.warning;
         if (!isAvailable)
             return Theme.error;
@@ -48,7 +49,7 @@ StyledRect {
     }
 
     readonly property color statusContainerColor: {
-        if (isBusy || isConnecting)
+        if (isApplyingMode || isBusy || isConnecting)
             return Theme.withAlpha(Theme.warning, 0.15);
         if (!isAvailable)
             return Theme.withAlpha(Theme.error, 0.15);
@@ -58,7 +59,7 @@ StyledRect {
     }
 
     readonly property color statusDotColor: {
-        if (isBusy || isConnecting)
+        if (isApplyingMode || isBusy || isConnecting)
             return Theme.warning;
         if (!isAvailable)
             return Theme.error;
@@ -68,6 +69,8 @@ StyledRect {
     }
 
     readonly property string statusTitle: {
+        if (isApplyingMode)
+            return I18n.tr("Applying mode...", "WARP status header");
         if (isBusy || isConnecting)
             return pendingAction === "disconnect"
                 ? I18n.tr("Disconnecting...", "WARP status header")
@@ -80,6 +83,8 @@ StyledRect {
     }
 
     readonly property string statusSubtitle: {
+        if (isApplyingMode)
+            return I18n.tr("Reconnecting with the new mode", "WARP status subtitle");
         if (isBusy)
             return I18n.tr("Applying change", "WARP status subtitle");
         if (!isAvailable)
@@ -172,7 +177,7 @@ StyledRect {
     function friendlyDisconnectReason(reason) {
         switch (reason) {
         case "Settings Changed":
-            return I18n.tr("Settings changed — reconnect to apply", "WARP disconnect reason");
+            return I18n.tr("Configuration updated", "WARP disconnect reason");
         case "Admin directed disconnect":
             return I18n.tr("Disconnected by administrator", "WARP disconnect reason");
         case "The network is not available":
@@ -212,9 +217,9 @@ StyledRect {
                     anchors.centerIn: parent
                     property real spinAngle: 0
 
-                    rotation: (root.isConnecting || root.isBusy) ? spinAngle : 0
+                    rotation: (root.isConnecting || root.isBusy || root.isApplyingMode) ? spinAngle : 0
                     name: {
-                        if (root.isConnecting || root.isBusy)
+                        if (root.isConnecting || root.isBusy || root.isApplyingMode)
                             return "sync";
                         if (!root.isAvailable)
                             return "error";
@@ -228,7 +233,7 @@ StyledRect {
                         to: 360
                         duration: 1000
                         loops: Animation.Infinite
-                        running: root.isConnecting || root.isBusy
+                        running: root.isConnecting || root.isBusy || root.isApplyingMode
                     }
                 }
             }
@@ -272,8 +277,8 @@ StyledRect {
             DankToggle {
                 hideText: true
                 checked: root.isConnected
-                toggling: root.isBusy || root.isConnecting
-                enabled: !root.isBusy
+                toggling: root.isBusy || root.isConnecting || root.isApplyingMode
+                enabled: !root.isBusy && !root.isApplyingMode
                 Layout.alignment: Qt.AlignVCenter
                 onClicked: root.toggleRequested()
             }
