@@ -1,7 +1,7 @@
 # dms-warp-toggle
 
-A minimal DankMaterialShell plugin that toggles Cloudflare WARP via `warp-cli` with real-time status updates.
-![Preview](./assets/preview.gif)
+A minimal DankMaterialShell plugin that toggles Cloudflare WARP via `warp-cli` with live status, mode switching, and tunnel stats.
+![Preview](./assets/screenshot.png)
 
 ## Features
 

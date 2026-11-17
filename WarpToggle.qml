@@ -52,7 +52,9 @@ PluginComponent {
             return "Unavailable";
         if (isConnecting)
             return "Connecting...";
-        return isConnected ? operationModeLabel : "Disconnected";
+        if (isConnected)
+            return operationMode === "warp" ? "Connected" : operationModeLabel;
+        return "Disconnected";
     }
     ccWidgetIsActive: isConnected
     pillClickAction: () => WarpToggleService.toggle()
