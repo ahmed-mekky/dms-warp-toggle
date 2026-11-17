@@ -17,9 +17,21 @@ Singleton {
     property bool isConnecting: false
     property bool isAvailable: false
     property bool isBusy: false
+    property bool isSwitchingMode: false
+    property string pendingAction: ""
     property string statusText: "Unknown"
     property string networkHealth: ""
     property string disconnectReason: ""
+    property string operationMode: "warp"
+    property string accountType: ""
+    property bool isManaged: false
+    property string organization: ""
+    property string tunnelProtocol: ""
+    property string colo: ""
+    property string latency: ""
+    property string loss: ""
+    property string sentTraffic: ""
+    property string receivedTraffic: ""
     property bool listenerEnabled: true
     property int restartInterval: 5000
 
@@ -27,6 +39,43 @@ Singleton {
     signal availabilityChanged
 
     readonly property bool isDisconnected: !isConnected && !isConnecting
+    readonly property var modeOptions: [
+        {
+            "value": "warp",
+            "label": I18n.tr("WARP", "WARP operation mode")
+        },
+        {
+            "value": "doh",
+            "label": I18n.tr("DoH only", "WARP operation mode")
+        },
+        {
+            "value": "warp+doh",
+            "label": I18n.tr("WARP + DoH", "WARP operation mode")
+        },
+        {
+            "value": "dot",
+            "label": I18n.tr("DoT only", "WARP operation mode")
+        },
+        {
+            "value": "warp+dot",
+            "label": I18n.tr("WARP + DoT", "WARP operation mode")
+        },
+        {
+            "value": "proxy",
+            "label": I18n.tr("SOCKS5 proxy", "WARP operation mode")
+        },
+        {
+            "value": "tunnel_only",
+            "label": I18n.tr("Tunnel only", "WARP operation mode")
+        }
+    ]
+    readonly property string operationModeLabel: {
+        for (let i = 0; i < modeOptions.length; i++) {
+            if (modeOptions[i].value === operationMode)
+                return modeOptions[i].label;
+        }
+        return operationMode ? operationMode : I18n.tr("Unknown", "Unknown WARP mode");
+    }
 
     Component.onCompleted: {
         loadSettings();
@@ -67,6 +116,7 @@ Singleton {
             isAvailable = exitCode === 0;
             if (isAvailable) {
                 parseStatusLine(stdout);
+                refreshDetails();
                 if (listenerEnabled && !listenerProcess.running) {
                     listenerProcess.running = true;
                 }
@@ -74,6 +124,7 @@ Singleton {
                 isConnected = false;
                 isConnecting = false;
                 statusText = "Unavailable";
+                clearDetails();
             }
             if (wasAvailable !== isAvailable) {
                 availabilityChanged();
@@ -94,16 +145,22 @@ Singleton {
                 isConnected = true;
                 isConnecting = false;
                 statusText = "Connected";
+                disconnectReason = "";
+                Qt.callLater(() => root.refreshDetails());
                 break;
             case "Connecting":
                 isConnecting = true;
                 isConnected = false;
                 statusText = "Connecting...";
+                networkHealth = "";
+                clearTunnelStats();
                 break;
             case "Disconnected":
                 isConnected = false;
                 isConnecting = false;
                 statusText = "Disconnected";
+                networkHealth = "";
+                clearTunnelStats();
                 break;
             }
             statusChanged();
@@ -123,28 +180,163 @@ Singleton {
         }
     }
 
+    function refreshDetails() {
+        if (!isAvailable)
+            return;
+        loadSettingsInfo();
+        loadRegistrationInfo();
+        if (isConnected)
+            loadTunnelStats();
+    }
+
+    function loadSettingsInfo() {
+        Proc.runCommand(`${pluginId}.settingsInfo`, [cliBinary, "-j", "settings", "list"], (stdout, exitCode) => {
+            if (exitCode !== 0)
+                return;
+            try {
+                const data = JSON.parse(stdout);
+                const mode = data && data.settings && data.settings.operation_mode;
+                if (mode)
+                    operationMode = mode;
+            } catch (e) {
+                console.warn(`[${pluginId}] Failed to parse settings:`, e);
+            }
+        }, 100);
+    }
+
+    function loadRegistrationInfo() {
+        Proc.runCommand(`${pluginId}.registrationInfo`, [cliBinary, "-j", "registration", "show"], (stdout, exitCode) => {
+            if (exitCode !== 0) {
+                accountType = "";
+                isManaged = false;
+                organization = "";
+                return;
+            }
+            try {
+                const data = JSON.parse(stdout);
+                accountType = (data.account && data.account.type) || "";
+                isManaged = data.managed === true;
+                if (isManaged)
+                    loadOrganization();
+                else
+                    organization = "";
+            } catch (e) {
+                console.warn(`[${pluginId}] Failed to parse registration:`, e);
+            }
+        }, 100);
+    }
+
+    function loadOrganization() {
+        Proc.runCommand(`${pluginId}.organization`, [cliBinary, "registration", "organization"], (stdout, exitCode) => {
+            organization = exitCode === 0 ? stdout.trim() : "";
+        }, 100);
+    }
+
+    function loadTunnelStats() {
+        Proc.runCommand(`${pluginId}.tunnelStats`, [cliBinary, "tunnel", "stats"], (stdout, exitCode) => {
+            if (exitCode !== 0) {
+                clearTunnelStats();
+                return;
+            }
+            const lines = stdout.split("\n");
+            for (let i = 0; i < lines.length; i++) {
+                const line = lines[i].trim();
+                if (line.startsWith("Tunnel Protocol:"))
+                    tunnelProtocol = line.substring("Tunnel Protocol:".length).trim();
+                else if (line.startsWith("Estimated latency:"))
+                    latency = line.substring("Estimated latency:".length).trim();
+                else if (line.startsWith("Estimated loss:"))
+                    loss = line.substring("Estimated loss:".length).trim();
+                else if (line.startsWith("Colo:"))
+                    colo = line.substring("Colo:".length).trim();
+                else if (line.startsWith("Sent:")) {
+                    const match = line.match(/^Sent:\s*(.*?);\s*Received:\s*(.*)$/);
+                    if (match) {
+                        sentTraffic = match[1].trim();
+                        receivedTraffic = match[2].trim();
+                    }
+                }
+            }
+        }, 100);
+    }
+
+    function clearTunnelStats() {
+        tunnelProtocol = "";
+        colo = "";
+        latency = "";
+        loss = "";
+        sentTraffic = "";
+        receivedTraffic = "";
+    }
+
+    function clearDetails() {
+        clearTunnelStats();
+        networkHealth = "";
+        disconnectReason = "";
+        operationMode = "";
+        accountType = "";
+        isManaged = false;
+        organization = "";
+    }
+
+    function setMode(mode) {
+        if (!isAvailable || isSwitchingMode || mode === operationMode)
+            return;
+        isSwitchingMode = true;
+        Proc.runCommand(`${pluginId}.setMode`, [cliBinary, "mode", mode], (stdout, exitCode) => {
+            isSwitchingMode = false;
+            if (exitCode !== 0) {
+                console.warn(`[${pluginId}] mode change failed:`, stdout);
+                ToastService.showError(
+                    I18n.tr("WARP mode change failed", "WARP mode error title"),
+                    stdout || I18n.tr("Command failed", "Generic command failure")
+                );
+                return;
+            }
+            operationMode = mode;
+            Qt.callLater(() => {
+                root.checkAvailability();
+                root.refreshDetails();
+            });
+        }, 100);
+    }
+
     function toggle() {
         if (isBusy)
             return;
 
-        isBusy = true;
+        const wasConnected = isConnected;
+        const wasConnecting = isConnecting;
+        const previousStatus = statusText;
         const command = (isConnected || isConnecting) ? "disconnect" : "connect";
+
+        isBusy = true;
+        pendingAction = command;
+        if (command === "connect") {
+            isConnecting = true;
+            statusText = "Connecting...";
+        } else {
+            statusText = "Disconnecting...";
+        }
 
         Proc.runCommand(`${pluginId}.${command}`, [cliBinary, command], (stdout, exitCode) => {
             isBusy = false;
+            pendingAction = "";
             if (exitCode !== 0) {
+                isConnected = wasConnected;
+                isConnecting = wasConnecting;
+                statusText = previousStatus;
                 console.warn(`[${pluginId}] ${command} failed:`, stdout);
                 ToastService.showError(
                     I18n.tr("WARP toggle failed", "WARP toggle error title"),
                     stdout || I18n.tr("Command failed", "Generic command failure")
                 );
             } else {
-                // Trigger a quick refresh after toggle
                 Qt.callLater(() => {
                     checkAvailability();
                 });
             }
-        }, 100);
+        }, 100, 15000);
     }
 
     function refresh() {

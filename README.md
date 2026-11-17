@@ -6,6 +6,9 @@ A minimal DankMaterialShell plugin that toggles Cloudflare WARP via `warp-cli` w
 ## Features
 
 - **Real-time status** — Uses `warp-cli -l status` live stream for instant state updates
+- **Mode switching** — Change the WARP operating mode (WARP, DoH, DoT, proxy, tunnel-only) without leaving the popout
+- **Account and tunnel details** — Shows account type, Teams organization, protocol, colo, latency, loss, and transfer totals
+- **Semantic status colors** — Green connected, amber connecting, red unavailable, neutral disconnected
 - **Minimal & polished** — Card-based UI with badge-style bar pill, spinner animation, and a clean popout panel following DMS Material 3 design
 - **No DBus, no native bindings** — Interacts with WARP exclusively via subprocess calls
 - **Settings** — Toggle the listener, manual refresh
@@ -22,8 +25,9 @@ A minimal DankMaterialShell plugin that toggles Cloudflare WARP via `warp-cli` w
 
 ## Usage
 
-- Click the bar pill to toggle WARP on/off
-- Expand the widget to see detailed status and a toggle button
+- Click the bar pill or Control Center tile to toggle WARP: connected disconnects, anything else connects
+- Expand the widget to see status, mode, account, tunnel stats, and the toggle button
+- Change the mode from the dropdown in the detail card or popout
 - Open plugin settings to configure the listener behavior
 
 ## Files
