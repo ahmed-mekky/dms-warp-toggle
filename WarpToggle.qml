@@ -34,6 +34,16 @@ PluginComponent {
         console.log("[warpToggle] Plugin loaded");
     }
 
+    function openPopout() {
+        const action = pillClickAction;
+        pillClickAction = null;
+        try {
+            triggerPopout();
+        } finally {
+            pillClickAction = action;
+        }
+    }
+
     ccWidgetIcon: {
         if (isConnecting || isBusy || isApplyingMode)
             return "sync";
@@ -58,8 +68,8 @@ PluginComponent {
     }
     ccWidgetIsActive: isConnected
     pillClickAction: () => WarpToggleService.toggle()
-    pillRightClickAction: () => root.triggerPopout()
-    ccDetailHeight: 350
+    pillRightClickAction: () => root.openPopout()
+    ccDetailHeight: Theme.iconSize * 14 + Theme.spacingM
 
     onCcWidgetExpanded: {
         WarpToggleService.refresh();
@@ -101,36 +111,28 @@ PluginComponent {
 
     // ─── Horizontal Bar Pill ───
     horizontalBarPill: Component {
-        DankIcon {
-            anchors.verticalCenter: parent.verticalCenter
-            property real spinAngle: 0
-            rotation: (root.isConnecting || root.isBusy || root.isApplyingMode) ? spinAngle : 0
-            name: {
-                if (root.isConnecting || root.isBusy || root.isApplyingMode)
-                    return "sync";
-                if (!root.isAvailable)
-                    return "error";
-                return root.isConnected ? "cloud" : "cloud_off";
-            }
-            size: Theme.barIconSize(root.barThickness)
-            color: {
-                if (root.isConnecting || root.isBusy || root.isApplyingMode)
-                    return Theme.warning;
-                if (!root.isAvailable)
-                    return Theme.error;
-                return root.isConnected ? Theme.primary : Theme.surfaceVariantText;
-            }
-            NumberAnimation on spinAngle {
-                from: 0
-                to: 360
-                duration: 1000
-                loops: Animation.Infinite
-                running: root.isConnecting || root.isBusy || root.isApplyingMode
-            }
+        WarpBarIcon {
+            barThickness: root.barThickness
+            isConnected: root.isConnected
+            isConnecting: root.isConnecting
+            isBusy: root.isBusy
+            isApplyingMode: root.isApplyingMode
+            isAvailable: root.isAvailable
         }
     }
 
     // ─── Vertical Bar Pill ───
+    verticalBarPill: Component {
+        WarpBarIcon {
+            barThickness: root.barThickness
+            isConnected: root.isConnected
+            isConnecting: root.isConnecting
+            isBusy: root.isBusy
+            isApplyingMode: root.isApplyingMode
+            isAvailable: root.isAvailable
+        }
+    }
+
     // ─── Popout Content ───
     popoutContent: Component {
         PopoutComponent {
@@ -174,5 +176,5 @@ PluginComponent {
         }
     }
 
-    popoutWidth: 380
+    popoutWidth: Theme.iconSize * 16
 }

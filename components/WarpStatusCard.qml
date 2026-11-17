@@ -3,6 +3,9 @@ import QtQuick.Layouts
 import qs.Common
 import qs.Widgets
 
+// DMS 1.4.x compatibility: DankToggle/DankDropdown are the names available there.
+// The DCommon.Widgets replacements only exist in newer releases.
+
 StyledRect {
     id: root
 
@@ -257,15 +260,15 @@ StyledRect {
                     spacing: Theme.spacingS
 
                     Rectangle {
-                        width: 8
-                        height: 8
-                        radius: 4
+                        width: Theme.spacingS
+                        height: Theme.spacingS
+                        radius: Theme.spacingS / 2
                         color: root.statusDotColor
                         anchors.verticalCenter: parent.verticalCenter
                     }
 
                     StyledText {
-                        width: parent.width - 8 - Theme.spacingS
+                        width: parent.width - Theme.spacingS - Theme.spacingS
                         text: root.statusSubtitle
                         font.pixelSize: Theme.fontSizeSmall
                         color: Theme.surfaceVariantText
@@ -330,7 +333,7 @@ StyledRect {
 
             DankDropdown {
                 compactMode: true
-                dropdownWidth: 180
+                dropdownWidth: Theme.iconSize * 7 + Theme.spacingM
                 currentValue: root.isSwitchingMode ? I18n.tr("Applying...", "WARP mode applying") : root.modeLabel(root.operationMode)
                 options: root.modeLabels
                 enabled: root.isAvailable && !root.isSwitchingMode
@@ -371,7 +374,7 @@ StyledRect {
                 text: root.accountDetail
                 font.pixelSize: Theme.fontSizeSmall
                 color: Theme.surfaceVariantText
-                Layout.maximumWidth: 160
+                Layout.maximumWidth: Theme.iconSize * 6 + Theme.spacingL
                 Layout.alignment: Qt.AlignVCenter
                 elide: Text.ElideRight
             }
